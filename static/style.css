@@ -1,0 +1,24 @@
+/* ── Vita-Win · style.css ──────────────────────────────────────────────
+   Minimal overrides only. Bootstrap 5.2 handles all base styling.
+   No animations, no transitions, no decorative flourishes.
+   ──────────────────────────────────────────────────────────────────── */
+
+/* Ensure action buttons are tall enough for fast tap targeting (WCAG 2.5.5) */
+#btn-taken,
+#btn-skipped {
+  min-height: 3.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Status banner base — colour classes applied by JS */
+#status-banner {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Disable logged buttons so the user cannot double-log */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

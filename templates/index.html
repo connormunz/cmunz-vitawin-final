@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Vita-Win: Daily vitamin and medication adherence logger." />
+  <title>Vita-Win | Connor Munz</title>
+
+  <!-- Bootstrap 5.2 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+    crossorigin="anonymous"
+  />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ─────────────────────────────────────────────────── -->
+  <nav class="navbar navbar-dark bg-dark" role="navigation" aria-label="Main navigation">
+    <div class="container-fluid px-4">
+      <span class="navbar-brand mb-0 h1">Connor Munz — Vita-Win</span>
+      <span class="navbar-text text-secondary" id="nav-date" aria-live="polite"></span>
+    </div>
+  </nav>
+
+  <!-- ── Main ───────────────────────────────────────────────────────── -->
+  <main class="container mt-4" id="main-content">
+
+    <!-- Status Banner -->
+    <section aria-labelledby="status-heading" class="mb-4">
+      <h1 id="status-heading" class="visually-hidden">Today's Adherence Status</h1>
+      <div
+        id="status-banner"
+        class="alert mb-0"
+        role="status"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section aria-labelledby="action-heading" class="mb-4" id="action-section">
+      <h2 id="action-heading" class="visually-hidden">Log Today's Dose</h2>
+      <div class="d-grid gap-3 d-sm-flex">
+        <button
+          id="btn-taken"
+          type="button"
+          class="btn btn-success btn-lg flex-sm-fill"
+          aria-label="Log vitamins as taken today"
+          onclick="logDose('taken')"
+        >
+          ✓ Taken
+        </button>
+        <button
+          id="btn-skipped"
+          type="button"
+          class="btn btn-outline-secondary btn-lg flex-sm-fill"
+          aria-label="Log vitamins as skipped today"
+          onclick="logDose('skipped')"
+        >
+          ✗ Skipped
+        </button>
+      </div>
+      <p id="log-timestamp" class="text-muted mt-2 small" aria-live="polite"></p>
+    </section>
+
+    <!-- History Table -->
+    <section aria-labelledby="history-heading">
+      <h2 id="history-heading" class="h5 mb-3">Log History</h2>
+      <div class="table-responsive">
+        <table
+          class="table table-bordered table-sm table-striped align-middle"
+          aria-label="Vitamin adherence log history"
+        >
+          <thead class="table-dark">
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Status</th>
+              <th scope="col">Logged At</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+      <button
+        type="button"
+        class="btn btn-outline-danger btn-sm mt-1"
+        onclick="clearHistory()"
+        aria-label="Clear all history from this browser"
+      >
+        Clear History
+      </button>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────── -->
+  <footer class="text-center text-muted small mt-5 mb-3" role="contentinfo">
+    <p class="mb-0">Vita-Win &copy; <span id="footer-year"></span> Connor Munz. Data stored locally in this browser only.</p>
+  </footer>
+
+  <!-- Bootstrap 5.2 JS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I"
+    crossorigin="anonymous"
+  ></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
