@@ -9,10 +9,6 @@ const STORAGE_PREFIX = "vitawin_";
 
 /* ── Helpers ──────────────────────────────────────────────────────── */
 
-/**
- * Returns today's date string in YYYY-MM-DD (local time).
- * @returns {string}
- */
 function todayKey() {
   const d = new Date();
   const yyyy = d.getFullYear();
@@ -21,14 +17,8 @@ function todayKey() {
   return `${STORAGE_PREFIX}${yyyy}-${mm}-${dd}`;
 }
 
-/**
- * Returns a human-readable date label from a storage key.
- * @param {string} key  e.g. "vitawin_2025-06-01"
- * @returns {string}    e.g. "Sun, Jun 1 2025"
- */
 function labelFromKey(key) {
   const dateStr = key.replace(STORAGE_PREFIX, "");
-  // Parse as local date to avoid UTC-offset shifting
   const [yyyy, mm, dd] = dateStr.split("-").map(Number);
   const d = new Date(yyyy, mm - 1, dd);
   return d.toLocaleDateString(undefined, {
@@ -39,11 +29,6 @@ function labelFromKey(key) {
   });
 }
 
-/**
- * Formats an ISO timestamp to a short local time string.
- * @param {string} iso
- * @returns {string}  e.g. "2:34:07 PM"
- */
 function formatTime(iso) {
   return new Date(iso).toLocaleTimeString(undefined, {
     hour: "numeric",
@@ -52,10 +37,6 @@ function formatTime(iso) {
   });
 }
 
-/**
- * Retrieves all vitawin entries from localStorage, sorted descending by date.
- * @returns {Array<{key: string, status: string, timestamp: string}>}
- */
 function getAllEntries() {
   const entries = [];
   for (let i = 0; i < localStorage.length; i++) {
@@ -70,17 +51,12 @@ function getAllEntries() {
       // Corrupt entry — skip silently
     }
   }
-  // Sort newest first
   entries.sort((a, b) => b.key.localeCompare(a.key));
   return entries;
 }
 
 /* ── Core Actions ─────────────────────────────────────────────────── */
 
-/**
- * Logs today's dose status and refreshes UI.
- * @param {"taken"|"skipped"} status
- */
 function logDose(status) {
   const entry = {
     status,
@@ -90,9 +66,11 @@ function logDose(status) {
   renderAll();
 }
 
-/**
- * Clears all vitawin entries from localStorage after confirmation.
- */
+function undoToday() {
+  localStorage.removeItem(todayKey());
+  renderAll();
+}
+
 function clearHistory() {
   if (!window.confirm("Clear all Vita-Win history from this browser?")) return;
   const keysToRemove = [];
@@ -106,23 +84,21 @@ function clearHistory() {
 
 /* ── Render ───────────────────────────────────────────────────────── */
 
-/** Refreshes every UI region from the current localStorage state. */
 function renderAll() {
   renderStatus();
   renderHistory();
 }
 
-/** Updates the status banner and enables/disables action buttons. */
 function renderStatus() {
   const banner    = document.getElementById("status-banner");
   const btnTaken  = document.getElementById("btn-taken");
   const btnSkip   = document.getElementById("btn-skipped");
+  const btnUndo   = document.getElementById("btn-undo");
   const tsEl      = document.getElementById("log-timestamp");
-  const section   = document.getElementById("action-section");
 
-  const key     = todayKey();
-  const raw     = localStorage.getItem(key);
-  const entry   = raw ? JSON.parse(raw) : null;
+  const key   = todayKey();
+  const raw   = localStorage.getItem(key);
+  const entry = raw ? JSON.parse(raw) : null;
 
   if (entry) {
     const isTaken = entry.status === "taken";
@@ -131,21 +107,23 @@ function renderStatus() {
       ? "✓ Vitamins logged as TAKEN today."
       : "✗ Vitamins logged as SKIPPED today.";
 
-    // Disable both buttons — today is already logged
     btnTaken.disabled = true;
     btnSkip.disabled  = true;
+    btnUndo.hidden    = false;
 
     tsEl.textContent = `Logged at ${formatTime(entry.timestamp)}`;
   } else {
     banner.className = "alert mb-0 alert-secondary";
     banner.textContent = "No entry logged yet for today. Log your dose below.";
+
     btnTaken.disabled = false;
     btnSkip.disabled  = false;
-    tsEl.textContent  = "";
+    btnUndo.hidden    = true;
+
+    tsEl.textContent = "";
   }
 }
 
-/** Rebuilds the history table from localStorage. */
 function renderHistory() {
   const tbody   = document.getElementById("history-tbody");
   const entries = getAllEntries();
@@ -160,9 +138,9 @@ function renderHistory() {
 
   tbody.innerHTML = entries
     .map(({ key, status, timestamp }) => {
-      const isTaken     = status === "taken";
-      const badgeClass  = isTaken ? "bg-success" : "bg-secondary";
-      const label       = isTaken ? "Taken" : "Skipped";
+      const isTaken    = status === "taken";
+      const badgeClass = isTaken ? "bg-success" : "bg-secondary";
+      const label      = isTaken ? "Taken" : "Skipped";
       return `
         <tr>
           <td>${labelFromKey(key)}</td>
@@ -176,7 +154,6 @@ function renderHistory() {
 /* ── Init ─────────────────────────────────────────────────────────── */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Populate nav date
   const navDate = document.getElementById("nav-date");
   if (navDate) {
     navDate.textContent = new Date().toLocaleDateString(undefined, {
@@ -187,7 +164,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Footer year
   const yearEl = document.getElementById("footer-year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
